@@ -1,9 +1,11 @@
-open Base
-open Stdio
+open Sexplib0
+open Sexplib0.Sexp_conv
 module C = Configurator.V1
 
 let write_sexp fn sexp =
-  Out_channel.write_all fn ~data:(Sexp.to_string sexp)
+  let och = open_out fn in
+  Fun.protect (fun () -> output_string och (Sexp.to_string sexp))
+    ~finally:(fun () -> close_out och)
 
 let () =
   C.main ~name:"GLib" (fun c ->
@@ -39,7 +41,7 @@ let () =
       in
 
       let os_type = C.ocaml_config_var_exn (C.create "") "system" in
-      let ccopts = if Base.String.(os_type = "macosx") then [""] else ["-Wl,-no-as-needed"] in
+      let ccopts = if os_type = "macosx" then [""] else ["-Wl,-no-as-needed"] in
       let list_of_string_to_sexp = sexp_of_list sexp_of_string in
 
       write_sexp "c_flags.sexp"         (list_of_string_to_sexp conf.cflags);

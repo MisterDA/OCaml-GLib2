@@ -12,8 +12,7 @@
  (synopsis "OCaml bindings (auto-generated using gi-bindings-generator) for GLib2")
  (depends
   (dune-configurator :build)
-  (base :build)
-  (stdio :build)
+  (sexplib0 :build)
   ctypes
   ctypes-foreign
   gobject-introspection

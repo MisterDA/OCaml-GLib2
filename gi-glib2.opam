@@ -10,8 +10,7 @@ bug-reports: "https://github.com/cedlemo/OCaml-GLib2/issues"
 depends: [
   "dune" {>= "2.9"}
   "dune-configurator" {build}
-  "base" {build}
-  "stdio" {build}
+  "sexplib0" {build}
   "ctypes"
   "ctypes-foreign"
   "gobject-introspection"
