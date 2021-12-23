@@ -129,7 +129,7 @@ module Make(Data : DataTypes) = struct
       foreign "g_list_foreach" (ptr_opt slist @-> GFunc.funptr @-> returning void)
     in
     (* See the DLList foreach for explanation *)
-    let f_raw a b = f a in
+    let f_raw a _b = f a in
     foreign_raw dllist f_raw
 
 end

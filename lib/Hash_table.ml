@@ -141,7 +141,7 @@ module Make(Data : DataTypes) = struct
     (*
      * See DLList implementation of foreach for an explanation
      * *)
-    let f_raw a b c = f a b in
+    let f_raw a b _c = f a b in
     foreign_raw hash_table f_raw
 
 end

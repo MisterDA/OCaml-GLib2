@@ -162,6 +162,6 @@ module Make(Data : DataTypes) = struct
      * ptr data @-> returning void instead of
      * ptr data @-> ptr_opt void @-> returning void.
     *)
-    let f_raw a b = f a in
+    let f_raw a _b = f a in
     foreign_raw dllist f_raw
 end
