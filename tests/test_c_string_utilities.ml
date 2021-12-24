@@ -32,9 +32,8 @@ let test_OCaml_C_string_converters test_ctxt =
   assert_equal_string str str'
 
 let tests =
-  "GLib Core C strings utilities" >:::
-  [
-    "Test strlen" >:: test_c_strlen;
-    "Test OCaml C string converters" >:: test_OCaml_C_string_converters;
-  ]
-
+  "GLib Core C strings utilities"
+  >::: [
+         "Test strlen" >:: test_c_strlen;
+         "Test OCaml C string converters" >:: test_OCaml_C_string_converters;
+       ]

@@ -26,30 +26,29 @@ open Foreign
 
 module type DataTypes = sig
   type t
+
   val t_typ : t Ctypes.typ
 end
 
-module Make(Data : DataTypes) = struct
+module Make (Data : DataTypes) = struct
   type sequence = unit ptr
+
   let sequence : sequence typ = ptr void
+
   type data = Data.t
+
   let data = Data.t_typ
 
-  module GDestroy_notify =
-    GCallback.GDestroyNotify.Make(struct
-      type t = data
-      let t_typ = data
-    end)
+  module GDestroy_notify = GCallback.GDestroyNotify.Make (struct
+    type t = data
+
+    let t_typ = data
+  end)
 
   let create =
     foreign "g_sequence_new" (GDestroy_notify.funptr @-> returning sequence)
 
-  let free =
-    foreign "g_sequence_free" (sequence @-> returning void)
-
-  let length =
-    foreign "g_sequence_get_length" (sequence @-> returning uint)
-
-  let is_empty =
-    foreign "g_sequence_is_empty" (sequence @-> returning bool)
+  let free = foreign "g_sequence_free" (sequence @-> returning void)
+  let length = foreign "g_sequence_get_length" (sequence @-> returning uint)
+  let is_empty = foreign "g_sequence_is_empty" (sequence @-> returning bool)
 end

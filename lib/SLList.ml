@@ -17,6 +17,7 @@
  *)
 
 open Ctypes
+
 open Foreign
 (** GLib Singly Linked List
  * https://developer.gnome.org/glib/stable/glib-Singly-Linked-Lists.html
@@ -24,112 +25,113 @@ open Foreign
 
 module type DataTypes = sig
   type t
+
   val t_typ : t Ctypes.typ
   val free_func : (t ptr -> unit) option
 end
 
-module Make(Data : DataTypes) = struct
+module Make (Data : DataTypes) = struct
   type slist
+
   let slist : slist structure typ = structure "SList"
+
   type data = Data.t
+
   let data = Data.t_typ
   let free_func = Data.free_func
 
-  module Comp_func =
-    GCallback.CompareFunc.Make(struct
-      type t = data
-      let t_typ = data
-    end)
+  module Comp_func = GCallback.CompareFunc.Make (struct
+    type t = data
 
-  module GDestroy_notify =
-    GCallback.GDestroyNotify.Make(struct
-      type t = data
-      let t_typ = data
-    end)
+    let t_typ = data
+  end)
 
-  module GFunc =
-    GCallback.GFunc.Make(struct
-      type t = data
-      let t_typ = data
-    end)
+  module GDestroy_notify = GCallback.GDestroyNotify.Make (struct
+    type t = data
 
-  let slist_data  = field slist "data" (ptr data)
-  let slist_next  = field slist "next" (ptr_opt slist)
+    let t_typ = data
+  end)
+
+  module GFunc = GCallback.GFunc.Make (struct
+    type t = data
+
+    let t_typ = data
+  end)
+
+  let slist_data = field slist "data" (ptr data)
+  let slist_next = field slist "next" (ptr_opt slist)
   let () = seal slist
-
-  let free =
-    foreign "g_slist_free" (ptr_opt slist @-> returning void)
+  let free = foreign "g_slist_free" (ptr_opt slist @-> returning void)
 
   let free_full =
-      foreign "g_slist_free_full" (ptr_opt slist @-> GDestroy_notify.funptr @-> returning void)
+    foreign "g_slist_free_full"
+      (ptr_opt slist @-> GDestroy_notify.funptr @-> returning void)
 
   let finalise sllist =
     match free_func with
     | None -> Gc.finalise free sllist
     | Some fn ->
-      let free_full' sl = free_full sl fn in
-      Gc.finalise free_full' sllist
+        let free_full' sl = free_full sl fn in
+        Gc.finalise free_full' sllist
 
   let append sllist element =
     let append_raw =
-      foreign "g_slist_append" (ptr_opt slist @-> ptr data @-> returning (ptr_opt slist))
+      foreign "g_slist_append"
+        (ptr_opt slist @-> ptr data @-> returning (ptr_opt slist))
     in
     match sllist with
     | Some _ -> append_raw sllist element
-    | None -> let sllist' = append_raw sllist element in
-      let () = finalise sllist' in
-      sllist'
+    | None ->
+        let sllist' = append_raw sllist element in
+        let () = finalise sllist' in
+        sllist'
 
   let prepend sllist element =
-    let is_start = match sllist with
-      | None -> true
-      | Some _ -> false
-    in
-    if is_start then begin
+    let is_start = match sllist with None -> true | Some _ -> false in
+    if is_start then
       let prepend_raw =
-        foreign "g_slist_prepend" (ptr_opt slist @-> ptr data @-> returning (ptr_opt slist))
+        foreign "g_slist_prepend"
+          (ptr_opt slist @-> ptr data @-> returning (ptr_opt slist))
       in
       match sllist with
       | Some _ -> prepend_raw sllist element
-      | None -> let sllist' = prepend_raw sllist element in
-        let () = finalise sllist' in
-        sllist'
-    end
-    else
-      raise (Invalid_argument "The element is not the start of the list")
+      | None ->
+          let sllist' = prepend_raw sllist element in
+          let () = finalise sllist' in
+          sllist'
+    else raise (Invalid_argument "The element is not the start of the list")
 
-  let length =
-    foreign "g_slist_length" (ptr_opt slist @-> returning uint)
+  let length = foreign "g_slist_length" (ptr_opt slist @-> returning uint)
 
   let next = function
     | None -> None
-    | Some sllist_ptr ->
-      getf (!@sllist_ptr) slist_next
+    | Some sllist_ptr -> getf !@sllist_ptr slist_next
 
   let get_data = function
     | None -> None
     | Some sllist_ptr ->
-      let data_ptr = getf (!@sllist_ptr) slist_data in
-      Some data_ptr
+        let data_ptr = getf !@sllist_ptr slist_data in
+        Some data_ptr
 
-  let last =
-    foreign "g_slist_last" (ptr_opt slist @-> returning (ptr_opt slist))
+  let last = foreign "g_slist_last" (ptr_opt slist @-> returning (ptr_opt slist))
 
   let sort =
-    foreign "g_slist_sort" (ptr_opt slist @-> Comp_func.funptr @-> returning (ptr_opt slist))
+    foreign "g_slist_sort"
+      (ptr_opt slist @-> Comp_func.funptr @-> returning (ptr_opt slist))
 
   let nth =
     foreign "g_slist_nth" (ptr_opt slist @-> int @-> returning (ptr_opt slist))
 
   let concat =
-    foreign "g_slist_concat" (ptr_opt slist @-> ptr_opt slist @-> returning (ptr_opt slist))
+    foreign "g_slist_concat"
+      (ptr_opt slist @-> ptr_opt slist @-> returning (ptr_opt slist))
 
   let foreach dllist f =
     let foreign_raw =
-      foreign "g_list_foreach" (ptr_opt slist @-> GFunc.funptr @-> returning void)
+      foreign "g_list_foreach"
+        (ptr_opt slist @-> GFunc.funptr @-> returning void)
     in
     (* See the DLList foreach for explanation *)
     let f_raw a _b = f a in
     foreign_raw dllist f_raw
-
 end

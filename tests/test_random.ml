@@ -36,23 +36,22 @@ let test_random_double_range test_ctxt =
 let test_random_int test_ctxt =
   let open Unsigned in
   let rint = GLib.Core.random_int () in
-  assert_equal ~printer true UInt32.((compare rint zero) >= 0);
-  assert_equal ~printer true UInt32.((compare rint GLib.Core.c_MAXUINT32) <= 0)
+  assert_equal ~printer true UInt32.(compare rint zero >= 0);
+  assert_equal ~printer true UInt32.(compare rint GLib.Core.c_MAXUINT32 <= 0)
 
 let test_random_int_range test_ctxt =
   let open Unsigned in
   let start = Int32.of_int 10 in
   let stop = Int32.of_int 21 in
   let rint = GLib.Core.random_int_range start stop in
-  assert_equal ~printer true Int32.((compare rint start) >= 0);
-  assert_equal ~printer true Int32.((compare rint stop) <= 0)
-
+  assert_equal ~printer true Int32.(compare rint start >= 0);
+  assert_equal ~printer true Int32.(compare rint stop <= 0)
 
 let tests =
-  "Random functions test" >:::
-    [
-      "test random double" >:: test_random_double;
-      "test random double range" >:: test_random_double_range;
-      "test random int" >:: test_random_int;
-      "test random int range" >:: test_random_int_range;
-    ]
+  "Random functions test"
+  >::: [
+         "test random double" >:: test_random_double;
+         "test random double range" >:: test_random_double_range;
+         "test random int" >:: test_random_int;
+         "test random int range" >:: test_random_int_range;
+       ]

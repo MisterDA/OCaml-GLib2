@@ -18,35 +18,34 @@
 
 open OUnit2
 
-let assert_equal_string str1 str2 =
-  assert_equal ~printer: (fun s -> s) str1 str2
+let assert_equal_string str1 str2 = assert_equal ~printer:(fun s -> s) str1 str2
 
 let assert_equal_boolean bool1 bool2 =
-  assert_equal ~printer: (fun s -> string_of_bool s) bool1 bool2
+  assert_equal ~printer:(fun s -> string_of_bool s) bool1 bool2
 
 let assert_equal_int int1 int2 =
-  assert_equal ~printer: (fun s -> string_of_int s) int1 int2
+  assert_equal ~printer:(fun s -> string_of_int s) int1 int2
 
 let assert_equal_int32 int1 int2 =
-  assert_equal ~printer: (fun s -> Int32.to_string s) int1 int2
+  assert_equal ~printer:(fun s -> Int32.to_string s) int1 int2
 
 let assert_equal_int64 int1 int2 =
-  assert_equal ~printer: (fun s -> Int64.to_string s) int1 int2
+  assert_equal ~printer:(fun s -> Int64.to_string s) int1 int2
 
 let assert_equal_uint8 int1 int2 =
-  assert_equal ~printer: (fun s -> Unsigned.UInt8.to_string s) int1 int2
+  assert_equal ~printer:(fun s -> Unsigned.UInt8.to_string s) int1 int2
 
 let assert_equal_uint16 int1 int2 =
-  assert_equal ~printer: (fun s -> Unsigned.UInt16.to_string s) int1 int2
+  assert_equal ~printer:(fun s -> Unsigned.UInt16.to_string s) int1 int2
 
 let assert_equal_uint int1 int2 =
-  assert_equal ~printer: (fun s -> Unsigned.UInt.to_string s) int1 int2
+  assert_equal ~printer:(fun s -> Unsigned.UInt.to_string s) int1 int2
 
 let assert_equal_or_greater int1 int2 =
-    assert_equal ~printer: (fun s ->
-        String.concat " " [string_of_int int1;
-                           "is not >=";
-                           string_of_int int2]) true (int1 >= int2)
+  assert_equal
+    ~printer:(fun s ->
+      String.concat " " [ string_of_int int1; "is not >="; string_of_int int2 ])
+    true (int1 >= int2)
 
 let assert_file_exists filename =
   assert_equal_boolean true (Sys.file_exists filename)

@@ -19,20 +19,26 @@ let files_suffix = "Raw"
 (** Instead of generate all the data structures (and theirs related methods or
  *  constants), the idea is to choose what is needed. *)
 let data_structures =
-  ["Error"; "Rand"; "Date"; "DateTime"; "TimeVal"; "TimeZone";]
+  [ "Error"; "Rand"; "Date"; "DateTime"; "TimeVal"; "TimeZone" ]
 
 (** One can choose to skip the bindings of some constants because they are not
  *  needed or because you want to create manually the bindings in the "Core.ml"
  *  file. *)
-let const_to_skip = ["MAJOR_VERSION"; "MINOR_VERSION"; "MICRO_VERSION"]
+let const_to_skip = [ "MAJOR_VERSION"; "MINOR_VERSION"; "MICRO_VERSION" ]
 
 (** Like for the data_structures, you have to choose with function should have
  *  its bindings generated. *)
-let functions = ["random_double"; "random_double_range";
-                 "random_int"; "random_int_range";
-                 "get_current_time";
-                 "filename_to_uri"; "get_charset";
-                 "dir_make_tmp"]
+let functions =
+  [
+    "random_double";
+    "random_double_range";
+    "random_int";
+    "random_int_range";
+    "get_current_time";
+    "filename_to_uri";
+    "get_charset";
+    "dir_make_tmp";
+  ]
 
 let cwd = Sys.getcwd ()
 let dest_dir = cwd ^ "/lib"

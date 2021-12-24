@@ -38,18 +38,24 @@ let test_flags_type_list_of_value test_ctxt =
   let _ = assert_equal_int 2 (List.length flags) in
   let rec check = function
     | [] -> ()
-    | h :: q -> let t = (h == GLib.Option_flags.Hidden || h == GLib.Option_flags.In_main) in
-    if t == false then let v = GLib.Option_flags.to_value h in
-    print_endline (to_string v)
-    else let _ = assert_equal_boolean true t in check q
+    | h :: q ->
+        let t =
+          h == GLib.Option_flags.Hidden || h == GLib.Option_flags.In_main
+        in
+        if t == false then
+          let v = GLib.Option_flags.to_value h in
+          print_endline (to_string v)
+        else
+          let _ = assert_equal_boolean true t in
+          check q
   in
   check flags
 
 let tests =
-  "GLib enums tests" >:::
-    [
-      "Test enum type of value conversion" >:: test_enum_type_of_value;
-      "Test enum type to value conversion" >:: test_enum_type_to_value;
-      "Test flags type list to value conversion" >:: test_flags_type_list_of_value
-    ]
-
+  "GLib enums tests"
+  >::: [
+         "Test enum type of value conversion" >:: test_enum_type_of_value;
+         "Test enum type to value conversion" >:: test_enum_type_to_value;
+         "Test flags type list to value conversion"
+         >:: test_flags_type_list_of_value;
+       ]

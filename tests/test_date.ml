@@ -40,8 +40,8 @@ let test_date_create test_ctxt =
   Date.free date
 
 let tests =
-  "GLib2 Date module data and functions tests" >:::
-    [
-      "test get days in month" >:: test_get_days_in_month;
-      "Test create date" >:: test_date_create
-    ]
+  "GLib2 Date module data and functions tests"
+  >::: [
+         "test get days in month" >:: test_get_days_in_month;
+         "Test create date" >:: test_date_create;
+       ]

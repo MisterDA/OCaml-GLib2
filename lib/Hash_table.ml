@@ -18,75 +18,85 @@
 
 open Ctypes
 open Foreign
+
 (*
  * https://developer.gnome.org/glib/stable/glib-Hash-Tables.html
  *)
 module type DataTypes = sig
   type key
+
   val key : key Ctypes.typ
+
   type value
+
   val value : value Ctypes.typ
   val key_destroy_func : (key ptr -> unit) option
   val value_destroy_func : (value ptr -> unit) option
 end
 
-module Make(Data : DataTypes) = struct
+module Make (Data : DataTypes) = struct
   type hash = unit ptr
+
   let hash : hash typ = ptr void
+
   type key = Data.key
+
   let key = Data.key
+
   type value = Data.value
+
   let value = Data.value
   let key_destroy_func = Data.key_destroy_func
   let value_destroy_func = Data.value_destroy_func
 
-  module Hash_func =
-    GCallback.GHashFunc.Make(struct
-      type t = key
-      let t_typ = key
-    end)
+  module Hash_func = GCallback.GHashFunc.Make (struct
+    type t = key
 
-  module Key_equal_func =
-    GCallback.GEqualFunc.Make(struct
-      type t = key
-      let t_typ = key
-    end)
+    let t_typ = key
+  end)
 
-  module GHFunc =
-    GCallback.GHFunc.Make(struct
-      type t = key
-      let t = key
-      type t' = value
-      let t' = value
-    end)
+  module Key_equal_func = GCallback.GEqualFunc.Make (struct
+    type t = key
 
-  module GDestroy_notify_key =
-    GCallback.GDestroyNotify.Make(struct
-      type t = key
-      let t_typ = key
-    end)
+    let t_typ = key
+  end)
 
-  module GDestroy_notify_value =
-    GCallback.GDestroyNotify.Make(struct
-      type t = value
-      let t_typ = value
-    end)
+  module GHFunc = GCallback.GHFunc.Make (struct
+    type t = key
 
-  let unref =
-    foreign "g_hash_table_unref" (hash @-> returning void)
+    let t = key
 
-  let remove_all =
-    foreign "g_hash_table_remove_all" (hash @-> returning void)
+    type t' = value
+
+    let t' = value
+  end)
+
+  module GDestroy_notify_key = GCallback.GDestroyNotify.Make (struct
+    type t = key
+
+    let t_typ = key
+  end)
+
+  module GDestroy_notify_value = GCallback.GDestroyNotify.Make (struct
+    type t = value
+
+    let t_typ = value
+  end)
+
+  let unref = foreign "g_hash_table_unref" (hash @-> returning void)
+  let remove_all = foreign "g_hash_table_remove_all" (hash @-> returning void)
 
   let finalise hash =
     let _finalize h =
-      let () = remove_all h in unref h
+      let () = remove_all h in
+      unref h
     in
     Gc.finalise _finalize hash
 
   let create hash_func key_equal_func =
     let create_raw =
-      foreign "g_hash_table_new" (Hash_func.funptr @-> Key_equal_func.funptr @-> returning hash)
+      foreign "g_hash_table_new"
+        (Hash_func.funptr @-> Key_equal_func.funptr @-> returning hash)
     in
     let h = create_raw hash_func key_equal_func in
     let () = finalise h in
@@ -94,45 +104,52 @@ module Make(Data : DataTypes) = struct
 
   let create_full hash_func key_equal_func =
     let create_full_raw =
-    foreign "g_hash_table_new_full"
-      (Hash_func.funptr @-> Key_equal_func.funptr @->
-       GDestroy_notify_key.funptr @-> GDestroy_notify_value.funptr @-> returning hash)
+      foreign "g_hash_table_new_full"
+        (Hash_func.funptr @-> Key_equal_func.funptr
+       @-> GDestroy_notify_key.funptr @-> GDestroy_notify_value.funptr
+       @-> returning hash)
     in
-    let _key_destroy_func = match key_destroy_func with
-      | None -> fun _ -> ()
-      | Some fn -> fn
+    let _key_destroy_func =
+      match key_destroy_func with None -> fun _ -> () | Some fn -> fn
     in
-    let _value_destroy_func = match value_destroy_func with
-      | None -> fun _ -> ()
-      | Some fn -> fn
+    let _value_destroy_func =
+      match value_destroy_func with None -> fun _ -> () | Some fn -> fn
     in
-    let h = create_full_raw hash_func key_equal_func _key_destroy_func _value_destroy_func in
+    let h =
+      create_full_raw hash_func key_equal_func _key_destroy_func
+        _value_destroy_func
+    in
     let () = finalise h in
     h
 
   let insert =
-    foreign "g_hash_table_insert" (hash @-> ptr key @-> ptr value @-> returning void)
+    foreign "g_hash_table_insert"
+      (hash @-> ptr key @-> ptr value @-> returning void)
 
-  let size =
-    foreign "g_hash_table_size" (hash @-> returning uint)
+  let size = foreign "g_hash_table_size" (hash @-> returning uint)
 
   let lookup =
-    foreign "g_hash_table_lookup" (hash @-> ptr key @-> returning (ptr_opt value))
+    foreign "g_hash_table_lookup"
+      (hash @-> ptr key @-> returning (ptr_opt value))
 
   let lookup_extended hash_table lookup_key =
     let lookup_extended_raw =
       foreign "g_hash_table_lookup_extended"
-        (hash @-> ptr key @-> ptr (ptr_opt key) @-> ptr (ptr_opt value) @->
-         returning bool)
+        (hash @-> ptr key
+        @-> ptr (ptr_opt key)
+        @-> ptr (ptr_opt value)
+        @-> returning bool)
     in
     let orig_key_ptr = allocate (ptr_opt key) None in
     let value_ptr = allocate (ptr_opt value) None in
-    let ret = lookup_extended_raw hash_table lookup_key orig_key_ptr value_ptr in
-    let orig_key_opt = !@ orig_key_ptr in
-    let value_opt = !@ value_ptr in
-    match ret, orig_key_opt, value_opt with
+    let ret =
+      lookup_extended_raw hash_table lookup_key orig_key_ptr value_ptr
+    in
+    let orig_key_opt = !@orig_key_ptr in
+    let value_opt = !@value_ptr in
+    match (ret, orig_key_opt, value_opt) with
     | true, Some orig_key, Some value -> Some (orig_key, value)
-    |_ -> None
+    | _ -> None
 
   let foreach hash_table f =
     let foreign_raw =
@@ -143,7 +160,6 @@ module Make(Data : DataTypes) = struct
      * *)
     let f_raw a b _c = f a b in
     foreign_raw hash_table f_raw
-
 end
 
 (*

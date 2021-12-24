@@ -23,7 +23,7 @@ open Ctypes
 
 let test_get_ymd test_ctxt =
   let now = GLib.Date_time.create_now_local () in
-  let (year, month, day) = GLib.Date_time.get_ymd now in
+  let year, month, day = GLib.Date_time.get_ymd now in
   let now' = Unix.time () in
   let tm = Unix.gmtime now' in
   let _ = assert_equal_int32 (Int32.of_int (tm.tm_year + 1900)) year in
@@ -32,7 +32,5 @@ let test_get_ymd test_ctxt =
   GLib.Date_time.unref now
 
 let tests =
-  "GLib2 Date_time module data and functions tests" >:::
-    [
-      "test get ymd" >:: test_get_ymd;
-    ]
+  "GLib2 Date_time module data and functions tests"
+  >::: [ "test get ymd" >:: test_get_ymd ]

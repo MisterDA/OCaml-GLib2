@@ -20,32 +20,30 @@ open OUnit2
 open Ctypes
 open GLib
 
-module String_sequence =
-  GLib.Sequence.Make(struct
-    type t = char
-    let t_typ = char
-  end)
+module String_sequence = GLib.Sequence.Make (struct
+  type t = char
+
+  let t_typ = char
+end)
 
 (* let build_empty_sequence_sample () =
-  let s = String_sequence.create None in
-  let france = GLib.Core.string_to_char_ptr "france" in
-  let paris = GLib.Core.string_to_char_ptr "paris" in
-  let () = String_hash.insert h france paris in
-  let allemagne = GLib.Core.string_to_char_ptr "allemagne" in
-  let berlin = GLib.Core.string_to_char_ptr "berlin" in
-  let () = String_hash.insert h allemagne berlin in
-  h
+   let s = String_sequence.create None in
+   let france = GLib.Core.string_to_char_ptr "france" in
+   let paris = GLib.Core.string_to_char_ptr "paris" in
+   let () = String_hash.insert h france paris in
+   let allemagne = GLib.Core.string_to_char_ptr "allemagne" in
+   let berlin = GLib.Core.string_to_char_ptr "berlin" in
+   let () = String_hash.insert h allemagne berlin in
+   h
 *)
 
 let test_empty_sequence test_ctxt =
   let s = String_sequence.create (fun _ -> ()) in
   let len = String_sequence.length s in
-  let () = assert_equal_uint (Unsigned.UInt.zero) len in
+  let () = assert_equal_uint Unsigned.UInt.zero len in
   let is_empty = String_sequence.is_empty s in
   assert_equal_boolean true is_empty
 
 let tests =
-  "GLib2 sequence module tests" >:::
-  [
-    "Test empty sequence" >:: test_empty_sequence;
-  ]
+  "GLib2 sequence module tests"
+  >::: [ "Test empty sequence" >:: test_empty_sequence ]

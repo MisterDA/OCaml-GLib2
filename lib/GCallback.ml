@@ -21,6 +21,7 @@ open Foreign
 
 module type DataType = sig
   type t
+
   val t_typ : t Ctypes.typ
 end
 
@@ -28,8 +29,9 @@ end
  * Functor that generates a Ctypes signature for argument that are callback.
  * It is used in DLList and SLList for example.*)
 module CompareFunc = struct
-  module Make(Data : DataType) = struct
+  module Make (Data : DataType) = struct
     type data = Data.t
+
     let data = Data.t_typ
     let f = ptr data @-> ptr data @-> returning int
     let funptr = funptr f
@@ -37,8 +39,9 @@ module CompareFunc = struct
 end
 
 module GDestroyNotify = struct
-  module Make(Data : DataType) = struct
+  module Make (Data : DataType) = struct
     type data = Data.t
+
     let data = Data.t_typ
     let f = ptr data @-> returning void
     let funptr = funptr f
@@ -46,8 +49,9 @@ module GDestroyNotify = struct
 end
 
 module GFunc = struct
-  module Make(Data : DataType) = struct
+  module Make (Data : DataType) = struct
     type data = Data.t
+
     let data = Data.t_typ
     let f = ptr data @-> ptr_opt void @-> returning void
     let funptr = funptr f
@@ -55,8 +59,9 @@ module GFunc = struct
 end
 
 module GHashFunc = struct
-  module Make(Data : DataType) = struct
+  module Make (Data : DataType) = struct
     type data = Data.t
+
     let data = Data.t_typ
     let f = ptr data @-> returning uint
     let funptr = funptr f
@@ -64,8 +69,9 @@ module GHashFunc = struct
 end
 
 module GEqualFunc = struct
-  module Make(Data : DataType) = struct
+  module Make (Data : DataType) = struct
     type data = Data.t
+
     let data = Data.t_typ
     let f = ptr data @-> ptr data @-> returning bool
     let funptr = funptr f
@@ -74,16 +80,22 @@ end
 
 module type HashDataTypes = sig
   type t
+
   val t : t Ctypes.typ
+
   type t'
+
   val t' : t' Ctypes.typ
 end
 
 module GHFunc = struct
-  module Make(Data : HashDataTypes) = struct
+  module Make (Data : HashDataTypes) = struct
     type key = Data.t
+
     let key = Data.t
+
     type value = Data.t'
+
     let value = Data.t'
     let f = ptr key @-> ptr value @-> ptr_opt void @-> returning void
     let funptr = funptr f
