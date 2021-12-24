@@ -1,6 +1,5 @@
 (lang dune 2.9)
 (name gi-glib2)
-(formatting disabled)
 (generate_opam_files true)
 (use_standard_c_and_cxx_flags true)
 (source (github cedlemo/OCaml-GLib2))
