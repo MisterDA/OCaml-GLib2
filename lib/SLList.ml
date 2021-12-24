@@ -17,8 +17,8 @@
  *)
 
 open Ctypes
-
 open Foreign
+
 (** GLib Singly Linked List
  * https://developer.gnome.org/glib/stable/glib-Singly-Linked-Lists.html
 *)
