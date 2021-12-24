@@ -48,10 +48,5 @@ let assert_equal_or_greater int1 int2 =
                            "is not >=";
                            string_of_int int2]) true (int1 >= int2)
 
-let is_travis = try
-    bool_of_string (Sys.getenv "TRAVIS_TESTS")
-  with
-  | _ -> false
-
 let assert_file_exists filename =
   assert_equal_boolean true (Sys.file_exists filename)
