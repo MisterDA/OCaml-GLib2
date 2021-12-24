@@ -161,7 +161,7 @@ module Make (Data : DataTypes) = struct
      * I just have to pass a function that can carry variables from other environment
      * than the callback itself.
      *
-     * Ctypes absolutly want the same signature than in C, using f_raw allows
+     * Ctypes absolutely want the same signature than in C, using f_raw allows
      * user to define the callback to foreach with a signature like
      * ptr data @-> returning void instead of
      * ptr data @-> ptr_opt void @-> returning void.

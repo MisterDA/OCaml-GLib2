@@ -26,5 +26,5 @@ The idea is to generate the bindings and to compile the library
 git clone https://github.com/cedlemo/OCaml-GLib2
 cd OCaml-GLib2
 dune exec generator/gen.exe
-dune run test --profile=release
+dune runtest --profile=release
 ```
