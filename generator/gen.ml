@@ -39,8 +39,8 @@ let dest_dir = cwd ^ "/lib"
 let sources = Loader.generate_files dest_dir ("Core" ^ files_suffix)
 
 let () =
-  let () = Loader.write_constant_bindings_for namespace ~version sources const_to_skip in
-  let () = Loader.write_function_bindings_for namespace ~version sources functions in
-  let () = Loader.write_enum_and_flag_bindings_for namespace ~version dest_dir () in
-  let () = Loader.write_bindings_for namespace ~version dest_dir data_structures in
+  Loader.write_constant_bindings_for namespace ~version sources const_to_skip;
+  Loader.write_function_bindings_for namespace ~version sources functions;
+  Loader.write_enum_and_flag_bindings_for namespace ~version dest_dir ();
+  Loader.write_bindings_for namespace ~version dest_dir data_structures;
   BG.Binding_utils.Sources.close sources

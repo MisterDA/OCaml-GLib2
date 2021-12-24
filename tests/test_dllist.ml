@@ -183,7 +183,7 @@ let test_list_int_free_full test_ctxt =
           counter := (!counter + (!@v)))
   end)
   in
-  (** In the following lines, the finalise is disabled in order so that the
+  (* In the following lines, the finalise is disabled in order so that the
    *  values are not de-allocated by the Gc.full_major. If the Garbage Collector
    *  clean those values, the test fails because !@v reference freed memory
    *  zone. *)
