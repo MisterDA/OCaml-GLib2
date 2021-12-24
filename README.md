@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/cedlemo/OCaml-GLib2/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/cedlemo/OCaml-GLib2/actions)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # OCaml-GLib2
 
