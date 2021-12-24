@@ -1,0 +1,6 @@
+[submodule "OCaml-GObject-Introspection"]
+	path = OCaml-GObject-Introspection
+	url = https://github.com/MisterDA/OCaml-GObject-Introspection.git
+[submodule "OCaml-GI-ctypes-bindings-generator"]
+	path = OCaml-GI-ctypes-bindings-generator
+	url = https://github.com/MisterDA/OCaml-GI-ctypes-bindings-generator.git
